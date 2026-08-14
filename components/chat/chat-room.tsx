@@ -3631,6 +3631,11 @@ export function ChatRoom({ session, onBack }: ChatRoomProps) {
     };
 
     useEffect(() => {
+        if (!pendingGenerate || isGeneratingRef.current) return;
+        void triggerAIResponse();
+    }, [pendingGenerate, triggerAIResponse]);
+
+    useEffect(() => {
         const handleCustomAppReplyRequest = (event: Event) => {
             const detail = (event as CustomEvent<{
                 sessionId?: string;
