@@ -3480,6 +3480,7 @@ export function ChatRoom({ session, onBack }: ChatRoomProps) {
                             role: "assistant",
                             content: "",
                             rawResponseText: rawContent,
+                            reasoningText: reasoning,
                             nativeToolCalls: toolCalls,
                             nativeToolReasoning: reasoning,
                             nativeToolOpenRouterReasoningDetails: openRouterReasoningDetails,
