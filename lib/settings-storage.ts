@@ -864,7 +864,12 @@ export function resolveBinding(
         if (slot.regexIds && slot.regexIds.length > 0) resolved.regexIds = [...slot.regexIds];
     };
 
-    if (!characterId) return resolved;
+    if (!characterId) {
+        if (appId && config.appDefaults?.[appId]) {
+            applySlot(config.appDefaults[appId]!);
+        }
+        return resolved;
+    }
 
     // Apply character defaults
     const charBinding = config.characterBindings.find(b => b.characterId === characterId);

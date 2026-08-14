@@ -290,10 +290,24 @@ async function buildGroupChatPromptMessages(
     const activeSlot = resolveBinding(bindings, undefined, "group_chat");
 
     const apiConfigs = loadApiConfigs();
-    const boundConfigId = options?.apiConfigId || activeSlot.apiConfigId;
-    if (!boundConfigId) throw new ChatEngineError("No API Configuration bound for group chat.");
-    const config = apiConfigs.find(c => c.id === boundConfigId);
-    if (!config) throw new ChatEngineError("API Configuration not found for group chat.");
+    const resolveApiConfig = (apiConfigId?: string): ApiConfig | undefined => (
+        apiConfigId ? apiConfigs.find(config => config.id === apiConfigId) : undefined
+    );
+    let config = resolveApiConfig(options?.apiConfigId || activeSlot.apiConfigId);
+    if (!config) {
+        for (const charId of participantIds) {
+            const memberGroupSlot = resolveBinding(bindings, charId, "group_chat");
+            config = resolveApiConfig(memberGroupSlot.apiConfigId);
+            if (config) break;
+            const memberChatSlot = resolveBinding(bindings, charId, "chat");
+            config = resolveApiConfig(memberChatSlot.apiConfigId);
+            if (config) break;
+        }
+    }
+    if (!config) {
+        config = resolveApiConfig(bindings.globalDefaults.apiConfigId);
+    }
+    if (!config) throw new ChatEngineError("No API Configuration bound for group chat.");
 
     const presets = loadPresets();
     let preset = activeSlot.presetId ? presets.find(p => p.id === activeSlot.presetId) || null : null;
