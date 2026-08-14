@@ -1920,6 +1920,20 @@ export async function buildChatPromptMessages(
         offlineSummaryTag: preset?.story_summary_tag?.trim() || "summary",
         nativeToolHistory: usesNativeActions,
     });
+    const hasCharacterDescriptionMarker = preset?.prompts.some(prompt => (
+        prompt.marker && prompt.identifier === "charDescription"
+    )) === true;
+    if (!hasCharacterDescriptionMarker) {
+        llmMessages.unshift({
+            role: "system",
+            content: [
+                `You are ${character.name}.`,
+                character.persona.trim(),
+                character.personality?.trim(),
+            ].filter(Boolean).join("\n"),
+            _debugMeta: { marker: "charDescription:fallback" },
+        });
+    }
     if (promptProfile?.output === "plain_text") {
         llmMessages.push({
             role: "system",
