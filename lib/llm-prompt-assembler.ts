@@ -872,7 +872,8 @@ export function assemblePromptPayload(input: AssemblerInput): LLMMessage[] {
     // 条目存在且开启才注入；条目被关闭或预设中没有该条目都不注入（没有就没有）。
     // 仅在完全未选择预设时保持注入兜底。
     const historyInjectionEnabled = !preset
-        || (historyMarkerPrompt ? isPromptEnabled(historyMarkerPrompt, preset.prompt_order) : false);
+        || !historyMarkerPrompt
+        || isPromptEnabled(historyMarkerPrompt, preset.prompt_order);
     const useChronologicalShortTerm = Boolean(input.unifiedRecentItems && input.unifiedRecentItems.length > 0);
 
     if (!historyInjectionEnabled) {
@@ -2032,7 +2033,8 @@ export function assembleGroupPromptPayload(input: GroupAssemblerInput): LLMMessa
     // 条目存在且开启才注入；条目被关闭或预设中没有该条目都不注入（没有就没有）。
     // 仅在完全未选择预设时保持注入兜底。
     const historyInjectionEnabled = !preset
-        || (groupHistoryMarkerPrompt ? isPromptEnabled(groupHistoryMarkerPrompt, preset.prompt_order) : false);
+        || !groupHistoryMarkerPrompt
+        || isPromptEnabled(groupHistoryMarkerPrompt, preset.prompt_order);
 
     // 4. Short-term memory / chat history
     if (!historyInjectionEnabled) {
